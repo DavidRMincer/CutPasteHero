@@ -7,8 +7,10 @@ public class CutPaste_script : MonoBehaviour
     public float reach;
     public bool cuttingEnabled;
     public GameObject pasteMarker;
+    public UIManager_script ui;
 
     private GameObject[] inventory = new GameObject[5];
+    private int _invetoryIndex = 0;
 
     private void Start()
     {
@@ -32,12 +34,55 @@ public class CutPaste_script : MonoBehaviour
             //Right click to paste
             if (Input.GetButton("Fire2"))
             {
-                AdjustPastePoint(GetHit(Camera.main.transform.position, Camera.main.transform.forward.normalized, reach));
+                if (inventory[_invetoryIndex] != null)
+                {
+                    AdjustPastePoint(GetHit(Camera.main.transform.position, Camera.main.transform.forward.normalized, reach));
+                }
             }
             else if (Input.GetButtonUp("Fire2"))
             {
                 Paste();
                 pasteMarker.SetActive(false);
+            }
+            //Scroll
+            if (Input.mouseScrollDelta.y != 0f)
+            {
+                _invetoryIndex += -Mathf.FloorToInt(Input.mouseScrollDelta.y);
+                if (_invetoryIndex < 0)
+                {
+                    _invetoryIndex = inventory.Length - 1;
+                }
+                else if (_invetoryIndex > (inventory.Length - 1))
+                {
+                    _invetoryIndex = 0;
+                }
+
+                ui.SelectSlot(_invetoryIndex);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha1))
+            {
+                _invetoryIndex = 0;
+                ui.SelectSlot(_invetoryIndex);
+            }
+            else if (Input.GetKeyDown(KeyCode.Alpha2))
+            {
+                _invetoryIndex = 1;
+                ui.SelectSlot(_invetoryIndex);
+            }
+            else if (Input.GetKeyDown(KeyCode.Alpha3))
+            {
+                _invetoryIndex = 2;
+                ui.SelectSlot(_invetoryIndex);
+            }
+            else if (Input.GetKeyDown(KeyCode.Alpha4))
+            {
+                _invetoryIndex = 3;
+                ui.SelectSlot(_invetoryIndex);
+            }
+            else if (Input.GetKeyDown(KeyCode.Alpha5))
+            {
+                _invetoryIndex = 4;
+                ui.SelectSlot(_invetoryIndex);
             }
         }
     }
@@ -67,20 +112,29 @@ public class CutPaste_script : MonoBehaviour
 
     private void Cut(GameObject obj)
     {
-        for (int i = 0; i < inventory.Length; i++)
+        if (inventory[_invetoryIndex] == null)
         {
-            if (!inventory[i])
+            AssignObjToInventory(obj, _invetoryIndex);
+        }
+        else
+        {
+            for (int i = 0; i < inventory.Length; i++)
             {
-                inventory[i] = obj;
-                obj.SetActive(false);
-                break;
+                if (!inventory[i])
+                {
+                    AssignObjToInventory(obj, i);
+                    break;
+                }
             }
         }
+    }
 
-        foreach (var item in inventory)
-        {
-            Debug.Log(item);
-        }
+    private void AssignObjToInventory(GameObject obj, int slot)
+    {
+        inventory[slot] = obj;
+        obj.SetActive(false);
+
+        ui.AddtoInventory(slot, inventory[slot].GetComponent<CuttableObj_script>().inventoryIcon);
     }
 
     private void AdjustPastePoint(RaycastHit hit)
@@ -103,18 +157,26 @@ public class CutPaste_script : MonoBehaviour
 
     private void Paste()
     {
-        if (inventory[0] && pasteMarker.activeInHierarchy)
+        if (inventory[_invetoryIndex] && pasteMarker.activeInHierarchy)
         {
-            inventory[0].transform.position = pasteMarker.transform.position;
-            inventory[0].transform.rotation = pasteMarker.transform.rotation;
-            inventory[0].SetActive(true);
+            inventory[_invetoryIndex].transform.position = pasteMarker.transform.position;
+            inventory[_invetoryIndex].transform.rotation = pasteMarker.transform.rotation;
+            inventory[_invetoryIndex].SetActive(true);
 
-            inventory[0] = null;
+            ui.RemoveFromInventory(_invetoryIndex);
+
+            inventory[_invetoryIndex] = null;
         }
     }
 
     public void SetCutting(bool enabled)
     {
         cuttingEnabled = enabled;
+
+        for (int i = 0; i < inventory.Length; i++)
+        {
+            ui.inventory[i].gameObject.SetActive(enabled);
+            ui.slots[i].gameObject.SetActive(enabled);
+        }
     }
 }

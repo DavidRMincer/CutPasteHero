@@ -5,4 +5,5 @@ using UnityEngine;
 public class CuttableObj_script : MonoBehaviour
 {
     public bool canCut;
+    public Sprite inventoryIcon;
 }
