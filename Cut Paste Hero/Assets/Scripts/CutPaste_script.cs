@@ -91,7 +91,9 @@ public class CutPaste_script : MonoBehaviour
         if (hit.collider)
         {
             pasteMarker.transform.position = hit.point;
-            pasteMarker.transform.rotation = Quaternion.Euler(hit.normal);
+            pasteMarker.transform.rotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
+            //pasteMarker.transform.rotation = Quaternion.Euler(hit.normal);
+            Debug.DrawLine(pasteMarker.transform.position, pasteMarker.transform.position + (hit.normal * 2), Color.red);
         }
         else
         {
