@@ -11,6 +11,7 @@ public class CutPaste_script : MonoBehaviour
 
     private GameObject[] inventory = new GameObject[5];
     private int _invetoryIndex = 0;
+    private float _markerRotation = 0;
 
     private void Start()
     {
@@ -51,45 +52,49 @@ public class CutPaste_script : MonoBehaviour
                 pasteMarker.SetActive(false);
             }
             //Scroll
-            if (Input.mouseScrollDelta.y != 0f)
+            else
             {
-                _invetoryIndex += -Mathf.FloorToInt(Input.mouseScrollDelta.y);
-                if (_invetoryIndex < 0)
+                if (Input.mouseScrollDelta.y != 0f)
                 {
-                    _invetoryIndex = inventory.Length - 1;
+                    _invetoryIndex += -Mathf.FloorToInt(Input.mouseScrollDelta.y);
+                    if (_invetoryIndex < 0)
+                    {
+                        _invetoryIndex = inventory.Length - 1;
+                    }
+                    else if (_invetoryIndex > (inventory.Length - 1))
+                    {
+                        _invetoryIndex = 0;
+                    }
+
+                    ui.SelectSlot(_invetoryIndex);
                 }
-                else if (_invetoryIndex > (inventory.Length - 1))
+                if (Input.GetKeyDown(KeyCode.Alpha1))
                 {
                     _invetoryIndex = 0;
+                    ui.SelectSlot(_invetoryIndex);
                 }
-
-                ui.SelectSlot(_invetoryIndex);
+                else if (Input.GetKeyDown(KeyCode.Alpha2))
+                {
+                    _invetoryIndex = 1;
+                    ui.SelectSlot(_invetoryIndex);
+                }
+                else if (Input.GetKeyDown(KeyCode.Alpha3))
+                {
+                    _invetoryIndex = 2;
+                    ui.SelectSlot(_invetoryIndex);
+                }
+                else if (Input.GetKeyDown(KeyCode.Alpha4))
+                {
+                    _invetoryIndex = 3;
+                    ui.SelectSlot(_invetoryIndex);
+                }
+                else if (Input.GetKeyDown(KeyCode.Alpha5))
+                {
+                    _invetoryIndex = 4;
+                    ui.SelectSlot(_invetoryIndex);
+                }
             }
-            if (Input.GetKeyDown(KeyCode.Alpha1))
-            {
-                _invetoryIndex = 0;
-                ui.SelectSlot(_invetoryIndex);
-            }
-            else if (Input.GetKeyDown(KeyCode.Alpha2))
-            {
-                _invetoryIndex = 1;
-                ui.SelectSlot(_invetoryIndex);
-            }
-            else if (Input.GetKeyDown(KeyCode.Alpha3))
-            {
-                _invetoryIndex = 2;
-                ui.SelectSlot(_invetoryIndex);
-            }
-            else if (Input.GetKeyDown(KeyCode.Alpha4))
-            {
-                _invetoryIndex = 3;
-                ui.SelectSlot(_invetoryIndex);
-            }
-            else if (Input.GetKeyDown(KeyCode.Alpha5))
-            {
-                _invetoryIndex = 4;
-                ui.SelectSlot(_invetoryIndex);
-            }
+            
         }
     }
 
@@ -154,11 +159,32 @@ public class CutPaste_script : MonoBehaviour
         Debug.Log("Adjust Pasting");
         pasteMarker.SetActive(true);
         Debug.Log(hit.collider);
+        _markerRotation += Input.mouseScrollDelta.y * 10;
 
         if (hit.collider)
         {
             pasteMarker.transform.position = hit.point;
+
             pasteMarker.transform.rotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
+            pasteMarker.transform.RotateAround(hit.point, hit.normal, _markerRotation);
+
+            //pasteMarker.transform.rotation = Quaternion.Euler(0,0,0);
+
+            //pasteMarker.transform.localRotation = Quaternion.Euler(pasteMarker.transform.up * _markerRotation);
+            //pasteMarker.transform.localRotation = pasteMarker.transform.localRotation * Quaternion.FromToRotation(Vector3.up, hit.normal);
+
+            //pasteMarker.transform.rotation = Quaternion.Euler(pasteMarker.transform.up * _markerRotation);
+            //pasteMarker.transform.rotation = Quaternion.Slerp(pasteMarker.transform.rotation, Quaternion.FromToRotation(Vector3.up, hit.normal), 0.5f);
+
+            //pasteMarker.transform.rotation = Quaternion.Euler(pasteMarker.transform.up * _markerRotation);
+            //pasteMarker.transform.rotation = Quaternion.LookRotation(_markerRotation * Vector3.forward, hit.normal);
+
+            //Quaternion newRotation = new Quaternion();
+            //newRotation.x = Quaternion.FromToRotation(Vector3.up, hit.normal).x;
+            //newRotation.z = Quaternion.FromToRotation(Vector3.up, hit.normal).z;
+            //pasteMarker.transform.rotation = Quaternion.Slerp(pasteMarker.transform.rotation, newRotation, 0.5f);
+
+            //pasteMarker.transform.localRotation = Quaternion.LookRotation(new Vector3(transform.position.x, 0f, transform.position.z).normalized, hit.normal);
             //pasteMarker.transform.rotation = Quaternion.Euler(hit.normal);
             Debug.DrawLine(pasteMarker.transform.position, pasteMarker.transform.position + (hit.normal * 2), Color.red);
         }
@@ -173,9 +199,10 @@ public class CutPaste_script : MonoBehaviour
         if (inventory[_invetoryIndex] && pasteMarker.activeInHierarchy)
         {
             Quaternion pasteRotation = pasteMarker.transform.rotation;
-            //pasteRotation.y = transform.rotation.y;
 
             GameObject pastedObj = Instantiate(inventory[_invetoryIndex], pasteMarker.transform.position, pasteRotation);
+            //pastedObj.transform.localRotation
+            //    = Quaternion.LookRotation(new Vector3(pastedObj.transform.position.x - transform.position.x, 0f, pastedObj.transform.position.z - transform.position.z).normalized, pasteMarker.transform.up);
             pastedObj.SetActive(true);
             Destroy(inventory[_invetoryIndex]);
 

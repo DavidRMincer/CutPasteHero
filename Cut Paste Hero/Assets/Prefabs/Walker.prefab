@@ -151,7 +151,7 @@ MonoBehaviour:
   maxHealth: 1
   ui: {fileID: 0}
   damageDelay: 0
-  death: {fileID: 0}
+  death: {fileID: 8525672421098876265}
 --- !u!114 &8525672421098876265
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -197,7 +197,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3076381431491624057}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.53, z: 1}
+  m_LocalPosition: {x: 0, y: 0.5, z: 1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3076381431356615545}

@@ -6,4 +6,5 @@ public class CuttableObj_script : MonoBehaviour
 {
     public bool canCut;
     public Sprite inventoryIcon;
+    public GameObject assetContent;
 }

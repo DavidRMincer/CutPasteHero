@@ -12,6 +12,7 @@ public class Projectile_script : MonoBehaviour
     public float speed,
                     life;
     public int damage;
+    public Transform directionPointer;
     
     private float _remainingLife;
     private Rigidbody _rb;
@@ -22,7 +23,7 @@ public class Projectile_script : MonoBehaviour
         _rb = GetComponent<Rigidbody>();
 
         _remainingLife = life;
-        _rb.velocity = transform.forward * speed;
+        _rb.velocity = directionPointer.forward * speed;
     }
 
     private void Update()
