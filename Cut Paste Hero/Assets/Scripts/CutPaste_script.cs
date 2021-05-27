@@ -21,22 +21,28 @@ public class CutPaste_script : MonoBehaviour
     {
         if (cuttingEnabled)
         {
-            //Left click to cut
-            if (Input.GetButtonDown("Fire1"))
-            {
-                RaycastHit hit = GetHit(Camera.main.transform.position, Camera.main.transform.forward.normalized, reach);
+            //Set crosshair pulsing
+            RaycastHit hit = GetHit(Camera.main.transform.position, Camera.main.transform.forward.normalized, reach);
 
-                if (hit.collider.gameObject && hit.collider.GetComponent<CuttableObj_script>() && hit.collider.GetComponent<CuttableObj_script>().canCut)
+            if (hit.collider && hit.collider.GetComponent<CuttableObj_script>() && hit.collider.GetComponent<CuttableObj_script>().canCut)
+            {
+                ui.SetCrosshairPulsing(true);
+                //Left click to cut
+                if (Input.GetButtonDown("Fire1"))
                 {
                     Cut(hit.collider.gameObject);
                 }
+            }
+            else
+            {
+                ui.SetCrosshairPulsing(false);
             }
             //Right click to paste
             if (Input.GetButton("Fire2"))
             {
                 if (inventory[_invetoryIndex] != null)
                 {
-                    AdjustPastePoint(GetHit(Camera.main.transform.position, Camera.main.transform.forward.normalized, reach));
+                    AdjustPastePoint(hit);
                 }
             }
             else if (Input.GetButtonUp("Fire2"))
@@ -120,12 +126,17 @@ public class CutPaste_script : MonoBehaviour
         {
             for (int i = 0; i < inventory.Length; i++)
             {
-                if (!inventory[i])
+                if (inventory[i] == null)
                 {
                     AssignObjToInventory(obj, i);
                     break;
                 }
             }
+        }
+
+        foreach (var item in inventory)
+        {
+            Debug.Log(item);
         }
     }
 
@@ -133,12 +144,14 @@ public class CutPaste_script : MonoBehaviour
     {
         inventory[slot] = obj;
         obj.SetActive(false);
+        //Destroy(obj);
 
         ui.AddtoInventory(slot, inventory[slot].GetComponent<CuttableObj_script>().inventoryIcon);
     }
 
     private void AdjustPastePoint(RaycastHit hit)
     {
+        Debug.Log("Adjust Pasting");
         pasteMarker.SetActive(true);
         Debug.Log(hit.collider);
 
@@ -159,9 +172,12 @@ public class CutPaste_script : MonoBehaviour
     {
         if (inventory[_invetoryIndex] && pasteMarker.activeInHierarchy)
         {
-            inventory[_invetoryIndex].transform.position = pasteMarker.transform.position;
-            inventory[_invetoryIndex].transform.rotation = pasteMarker.transform.rotation;
-            inventory[_invetoryIndex].SetActive(true);
+            Quaternion pasteRotation = pasteMarker.transform.rotation;
+            //pasteRotation.y = transform.rotation.y;
+
+            GameObject pastedObj = Instantiate(inventory[_invetoryIndex], pasteMarker.transform.position, pasteRotation);
+            pastedObj.SetActive(true);
+            Destroy(inventory[_invetoryIndex]);
 
             ui.RemoveFromInventory(_invetoryIndex);
 
