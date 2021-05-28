@@ -34,6 +34,7 @@ public class HealthSystem_script : MonoBehaviour
 
     public void AddHealth(int additionalHealth)
     {
+        Debug.Log("Deal Damage");
         if (additionalHealth > 0 || _damageCounter <= 0f)
         {
             _health += additionalHealth;

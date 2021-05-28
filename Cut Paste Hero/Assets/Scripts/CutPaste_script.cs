@@ -24,6 +24,7 @@ public class CutPaste_script : MonoBehaviour
         {
             //Set crosshair pulsing
             RaycastHit hit = GetHit(Camera.main.transform.position, Camera.main.transform.forward.normalized, reach);
+            //Debug.Log(hit.collider.gameObject);
 
             if (hit.collider && hit.collider.GetComponent<CuttableObj_script>() && hit.collider.GetComponent<CuttableObj_script>().canCut)
             {
@@ -167,25 +168,7 @@ public class CutPaste_script : MonoBehaviour
 
             pasteMarker.transform.rotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
             pasteMarker.transform.RotateAround(hit.point, hit.normal, _markerRotation);
-
-            //pasteMarker.transform.rotation = Quaternion.Euler(0,0,0);
-
-            //pasteMarker.transform.localRotation = Quaternion.Euler(pasteMarker.transform.up * _markerRotation);
-            //pasteMarker.transform.localRotation = pasteMarker.transform.localRotation * Quaternion.FromToRotation(Vector3.up, hit.normal);
-
-            //pasteMarker.transform.rotation = Quaternion.Euler(pasteMarker.transform.up * _markerRotation);
-            //pasteMarker.transform.rotation = Quaternion.Slerp(pasteMarker.transform.rotation, Quaternion.FromToRotation(Vector3.up, hit.normal), 0.5f);
-
-            //pasteMarker.transform.rotation = Quaternion.Euler(pasteMarker.transform.up * _markerRotation);
-            //pasteMarker.transform.rotation = Quaternion.LookRotation(_markerRotation * Vector3.forward, hit.normal);
-
-            //Quaternion newRotation = new Quaternion();
-            //newRotation.x = Quaternion.FromToRotation(Vector3.up, hit.normal).x;
-            //newRotation.z = Quaternion.FromToRotation(Vector3.up, hit.normal).z;
-            //pasteMarker.transform.rotation = Quaternion.Slerp(pasteMarker.transform.rotation, newRotation, 0.5f);
-
-            //pasteMarker.transform.localRotation = Quaternion.LookRotation(new Vector3(transform.position.x, 0f, transform.position.z).normalized, hit.normal);
-            //pasteMarker.transform.rotation = Quaternion.Euler(hit.normal);
+            
             Debug.DrawLine(pasteMarker.transform.position, pasteMarker.transform.position + (hit.normal * 2), Color.red);
         }
         else
